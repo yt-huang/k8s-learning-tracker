@@ -215,15 +215,45 @@
   }
 
   /* Lab box */
-  .lab-box {
-    margin-top: 16px;
-    padding: 12px 16px;
-    background: rgba(129,140,248,0.08);
-    border: 1px solid rgba(129,140,248,0.2);
-    border-radius: 8px;
+  .lab-box { 
+    margin-top: 16px; 
+    padding: 12px 16px; 
+    background: rgba(129,140,248,0.08); 
+    border: 1px solid rgba(129,140,248,0.2); 
+    border-radius: 8px; 
   }
   .lab-box h4 { color: #818cf8; margin-bottom: 6px; font-size: 0.9rem; }
   .lab-box p { font-size: 0.85rem; color: var(--text); line-height: 1.6; }
+
+  .resources-box {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: rgba(56,189,248,0.05);
+    border: 1px solid rgba(56,189,248,0.15);
+    border-radius: 8px;
+  }
+  .resources-box h4 { color: var(--primary); margin-bottom: 10px; font-size: 0.9rem; }
+  .resources-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .resource-link {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(56,189,248,0.08);
+    border: 1px solid rgba(56,189,248,0.15);
+    border-radius: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.82rem;
+    transition: all 0.2s;
+  }
+  .resource-link:hover {
+    background: rgba(56,189,248,0.2);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
 
   /* Reset button */
   .reset-btn {
@@ -301,6 +331,16 @@ const MONTHS = [
   {
     id: 1, title: 'K8s Fundamentals', diff: 'beginner', diffLabel: '🟢 入门',
     lab: '部署一个多服务应用（前端 + 后端 + 数据库），使用 ConfigMap 和 Secret 管理配置。',
+    resources: [
+      ['📘 Pods', 'https://kubernetes.io/docs/concepts/workloads/pods/'],
+      ['📘 Deployments', 'https://kubernetes.io/docs/concepts/workloads/controllers/deployment/'],
+      ['📘 Services', 'https://kubernetes.io/docs/concepts/services-networking/service/'],
+      ['📘 ConfigMap & Secret', 'https://kubernetes.io/docs/concepts/configuration/'],
+      ['🎮 Play with K8s', 'https://labs.play-with-k8s.com/'],
+      ['🎯 Killercoda CKA', 'https://killercoda.com/killer-shell-cka'],
+      ['🧰 kind 本地集群', 'https://kind.sigs.k8s.io/docs/user/quick-start/'],
+      ['🧰 minikube 本地集群', 'https://minikube.sigs.k8s.io/docs/start/'],
+    ],
     weeks: [
       { name: '第 1 周：K8s 架构与 Pods', tasks: [
         '了解 K8s 发展历史和核心架构（Control Plane / Worker Nodes）',
@@ -339,6 +379,16 @@ const MONTHS = [
   {
     id: 2, title: 'Storage, Networking & Security', diff: 'intermediate', diffLabel: '🟡 中级',
     lab: '部署一个安全的多层应用，配置网络策略和基于 RBAC 的权限控制。',
+    resources: [
+      ['📘 存储 (PV/PVC)', 'https://kubernetes.io/docs/concepts/storage/'],
+      ['📘 Network Policies', 'https://kubernetes.io/docs/concepts/services-networking/network-policies/'],
+      ['📘 RBAC', 'https://kubernetes.io/docs/reference/access-authn-authz/rbac/'],
+      ['📘 Pod 安全标准', 'https://kubernetes.io/docs/concepts/security/pod-security-standards/'],
+      ['📗 Calico 网络安全', 'https://projectcalico.docs.tigera.io/security/'],
+      ['📗 Kyverno 策略引擎', 'https://kyverno.io/docs/'],
+      ['📗 OPA Gatekeeper', 'https://open-policy-agent.github.io/gatekeeper/website/docs/'],
+      ['🛡️ CIS K8s Benchmark', 'https://www.cisecurity.org/benchmark/kubernetes'],
+    ],
     weeks: [
       { name: '第 1 周：存储基础', tasks: [
         '理解 Volume 类型和 hostPath/emptyDir',
@@ -377,6 +427,17 @@ const MONTHS = [
   {
     id: 3, title: 'Observability & Helm', diff: 'intermediate', diffLabel: '🟡 中级',
     lab: '为微服务应用部署完整的可观测性栈，并用 Helm 管理所有组件。',
+    resources: [
+      ['📘 Prometheus 官方文档', 'https://prometheus.io/docs/introduction/overview/'],
+      ['📘 Grafana 文档', 'https://grafana.com/docs/grafana/latest/'],
+      ['📘 Loki 日志聚合', 'https://grafana.com/docs/loki/latest/'],
+      ['📘 Elasticsearch + Fluentd + Kibana', 'https://www.elastic.co/guide/index.html'],
+      ['📘 Helm 官方文档', 'https://helm.sh/docs/'],
+      ['📗 OpenTelemetry K8s', 'https://opentelemetry.io/docs/kubernetes/'],
+      ['📗 Jaeger 分布式追踪', 'https://www.jaegertracing.io/docs/'],
+      ['🎮 PromQL 在线练习', 'https://promlabs.com/promql-queries/'],
+      ['🧰 kube-prometheus-stack', 'https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack'],
+    ],
     weeks: [
       { name: '第 1 周：监控基础', tasks: [
         '部署 Metrics Server 实现资源指标采集',
@@ -415,6 +476,16 @@ const MONTHS = [
   {
     id: 4, title: 'Operators, Service Mesh & GitOps', diff: 'advanced', diffLabel: '🔴 高级',
     lab: '基于 Operator 模式部署 Prometheus，通过 Istio 实现灰度发布，使用 ArgoCD 实现 GitOps。',
+    resources: [
+      ['📘 Operator SDK', 'https://sdk.operatorframework.io/docs/'],
+      ['📘 kubebuilder 教程', 'https://book.kubebuilder.io/'],
+      ['📘 Istio 官方文档', 'https://istio.io/latest/docs/'],
+      ['📘 ArgoCD 文档', 'https://argo-cd.readthedocs.io/'],
+      ['📘 Crossplane 文档', 'https://docs.crossplane.io/'],
+      ['📗 Istio Killercoda 练习', 'https://killercoda.com/istio'],
+      ['📗 ArgoCD 入门教程', 'https://argo-cd.readthedocs.io/en/stable/getting_started/'],
+      ['🎮 ArgoCD Killercoda', 'https://killercoda.com/argocd'],
+    ],
     weeks: [
       { name: '第 1 周：CRD 与 Operator', tasks: [
         '理解 Kubernetes 的扩展机制',
@@ -453,6 +524,17 @@ const MONTHS = [
   {
     id: 5, title: 'Multi-cluster & Advanced', diff: 'advanced', diffLabel: '🔴 高级',
     lab: '搭建多集群联邦环境，实施跨集群服务发现和灾备切换。',
+    resources: [
+      ['📘 Cilium / eBPF 文档', 'https://docs.cilium.io/'],
+      ['📘 HashiCorp Vault on K8s', 'https://developer.hashicorp.com/vault/docs/platform/k8s'],
+      ['📘 Chaos Mesh', 'https://chaos-mesh.org/docs/'],
+      ['📘 KEDA 事件驱动伸缩', 'https://keda.sh/docs/'],
+      ['📘 Karpenter 自动伸缩', 'https://karpenter.sh/docs/'],
+      ['📘 Karmada 多集群管理', 'https://karmada.io/docs/'],
+      ['📗 Cluster API', 'https://cluster-api.sigs.k8s.io/'],
+      ['🎮 Cilium 交互式教程', 'https://play.instruqt.com/isovalent/'],
+      ['🎮 KEDA 官方实验室', 'https://github.com/kedacore/sample-dotnet-worker-servicebus-queue'],
+    ],
     weeks: [
       { name: '第 1 周：多集群管理', tasks: [
         '理解多集群架构模式和适用场景',
@@ -491,6 +573,16 @@ const MONTHS = [
   {
     id: 6, title: 'CKA/CKAD & Capstone', diff: 'advanced', diffLabel: '🔴 高级',
     lab: '完成一个生产级集群搭建项目，涵盖所有学到的知识点。',
+    resources: [
+      ['📘 CNCF CKA 考试大纲', 'https://github.com/cncf/curriculum'],
+      ['📘 CNCF CKAD 考试大纲', 'https://github.com/cncf/curriculum'],
+      ['📘 killer.sh 模拟考试', 'https://killer.sh/'],
+      ['📗 CKA 备考笔记', 'https://github.com/walidshaari/Kubernetes-Certified-Administrator'],
+      ['📗 CKAD 练习题', 'https://github.com/dgkanatsios/CKAD-exercises'],
+      ['📗 CKA 练习题', 'https://github.com/alijahnas/CKA-practice-exercises'],
+      ['🎮 Killercoda CKA 场景', 'https://killercoda.com/killer-shell-cka'],
+      ['🎮 Killercoda CKAD 场景', 'https://killercoda.com/killer-shell-ckad'],
+    ],
     weeks: [
       { name: '第 1 周：CKA 考试准备', tasks: [
         '了解 CKA 考试大纲和题型',
@@ -581,6 +673,16 @@ function build() {
     });
 
     html += `<div class="lab-box"><h4>🧪 本月项目实战</h4><p>${month.lab}</p></div>`;
+
+    // Resources
+    if (month.resources && month.resources.length > 0) {
+      html += `<div class="resources-box"><h4>📖 推荐资源</h4><div class="resources-grid">`;
+      month.resources.forEach(r => {
+        html += `<a href="${r[1]}" target="_blank" class="resource-link">${r[0]}</a>`;
+      });
+      html += `</div></div>`;
+    }
+
     card.innerHTML = html;
     cards.appendChild(card);
     tabs.appendChild(tab);

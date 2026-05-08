@@ -23,6 +23,20 @@
 
 > **Focus**: Pods · Deployments · Services · ConfigMaps
 
+### 📖 推荐资源
+
+| 资源 | 链接 |
+|:-----|:-----|
+| 📘 K8s 官方文档 — Pods | https://kubernetes.io/docs/concepts/workloads/pods/ |
+| 📘 K8s 官方文档 — Deployments | https://kubernetes.io/docs/concepts/workloads/controllers/deployment/ |
+| 📘 K8s 官方文档 — Services | https://kubernetes.io/docs/concepts/services-networking/service/ |
+| 📘 ConfigMap & Secret | https://kubernetes.io/docs/concepts/configuration/ |
+| 🎮 Play with K8s (在线实验室) | https://labs.play-with-k8s.com/ |
+| 🎯 Killercoda CKA 场景 | https://killercoda.com/killer-shell-cka |
+| 📹 Kubernetes 101 (YouTube) | https://www.youtube.com/playlist?list=PL7bmigfV0EqQt1E1yZ3oLiC1qH4TMhVq- |
+| 🧰 kind 本地集群 | https://kind.sigs.k8s.io/docs/user/quick-start/ |
+| 🧰 minikube 本地集群 | https://minikube.sigs.k8s.io/docs/start/ |
+
 ### 📈 Month Progress
 
 ```
@@ -114,6 +128,20 @@
 ## 📚 Month 2 — Storage, Networking & Security
 
 > **Focus**: Persistent Volumes · CNI · Network Policies · RBAC · Pod Security
+
+### 📖 推荐资源
+
+| 资源 | 链接 |
+|:-----|:-----|
+| 📘 K8s 存储文档 (PV/PVC/StorageClass) | https://kubernetes.io/docs/concepts/storage/ |
+| 📘 Network Policies | https://kubernetes.io/docs/concepts/services-networking/network-policies/ |
+| 📘 RBAC 授权 | https://kubernetes.io/docs/reference/access-authn-authz/rbac/ |
+| 📘 Pod 安全标准 | https://kubernetes.io/docs/concepts/security/pod-security-standards/ |
+| 📗 Calico 网络安全 | https://projectcalico.docs.tigera.io/security/ |
+| 📗 Kyverno 策略引擎 | https://kyverno.io/docs/ |
+| 📗 OPA Gatekeeper | https://open-policy-agent.github.io/gatekeeper/website/docs/ |
+| 🛡️ CIS K8s Benchmark | https://www.cisecurity.org/benchmark/kubernetes |
+| 🎯 K8s 安全最佳实践 | https://kubernetes.io/docs/concepts/security/ |
 
 ### 📈 Month Progress
 
@@ -207,6 +235,21 @@
 
 > **Focus**: Metrics · Logging · Grafana · Helm charts
 
+### 📖 推荐资源
+
+| 资源 | 链接 |
+|:-----|:-----|
+| 📘 Prometheus 官方文档 | https://prometheus.io/docs/introduction/overview/ |
+| 📘 Grafana 文档 | https://grafana.com/docs/grafana/latest/ |
+| 📘 Loki 日志聚合 | https://grafana.com/docs/loki/latest/ |
+| 📘 Elasticsearch + Fluentd + Kibana (EFK) | https://www.elastic.co/guide/index.html |
+| 📘 Helm 官方文档 | https://helm.sh/docs/ |
+| 📗 OpenTelemetry K8s | https://opentelemetry.io/docs/kubernetes/ |
+| 📗 Jaeger 分布式追踪 | https://www.jaegertracing.io/docs/ |
+| 📹 Prometheus 入门 (YouTube) | https://www.youtube.com/watch?v=h4Sl21AKiDg |
+| 🎮 PromQL 在线练习 | https://promlabs.com/promql-queries/ |
+| 🧰 kube-prometheus-stack | https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack |
+
 ### 📈 Month Progress
 
 ```
@@ -298,6 +341,21 @@
 ## 📚 Month 4 — Operators, Service Mesh & GitOps
 
 > **Focus**: Custom Resources · Istio · Argo CD · Crossplane
+
+### 📖 推荐资源
+
+| 资源 | 链接 |
+|:-----|:-----|
+| 📘 Operator SDK 文档 | https://sdk.operatorframework.io/docs/ |
+| 📘 kubebuilder 教程 | https://book.kubebuilder.io/ |
+| 📘 Istio 官方文档 | https://istio.io/latest/docs/ |
+| 📘 ArgoCD 文档 | https://argo-cd.readthedocs.io/ |
+| 📘 Crossplane 文档 | https://docs.crossplane.io/ |
+| 📗 Istio 一站式练习 (Killercoda) | https://killercoda.com/istio |
+| 📗 ArgoCD 入门教程 | https://argo-cd.readthedocs.io/en/stable/getting_started/ |
+| 📹 Istio Service Mesh 深入 (YouTube) | https://www.youtube.com/playlist?list=PL7bmigfV0EqQVrGPBwVHtHDiY6MWsNtP- |
+| 📹 GitOps 与 ArgoCD (YouTube) | https://www.youtube.com/watch?v=MeU5_k9k0qI |
+| 🎮 ArgoCD Killercoda 场景 | https://killercoda.com/argocd |
 
 ### 📈 Month Progress
 
@@ -391,6 +449,21 @@
 
 > **Focus**: Federation · Vault · Chaos · Autoscaling
 
+### 📖 推荐资源
+
+| 资源 | 链接 |
+|:-----|:-----|
+| 📘 Cilium / eBPF 文档 | https://docs.cilium.io/ |
+| 📘 HashiCorp Vault on K8s | https://developer.hashicorp.com/vault/docs/platform/k8s |
+| 📘 Chaos Mesh | https://chaos-mesh.org/docs/ |
+| 📘 LitmusChaos | https://litmuschaos.github.io/litmus/ |
+| 📘 KEDA 事件驱动伸缩 | https://keda.sh/docs/ |
+| 📘 Karpenter 自动伸缩 | https://karpenter.sh/docs/ |
+| 📘 Karmada 多集群管理 | https://karmada.io/docs/ |
+| 📗 Cluster API 声明式集群 | https://cluster-api.sigs.k8s.io/ |
+| 📗 Cilium 交互式教程 | https://play.instruqt.com/isovalent/ |
+| 🎮 KEDA 官方实验室 | https://github.com/kedacore/sample-dotnet-worker-servicebus-queue |
+
 ### 📈 Month Progress
 
 ```
@@ -482,6 +555,21 @@
 ## 📚 Month 6 — CKA/CKAD & Capstone
 
 > **Focus**: Certification prep · Capstone project · Interview readiness
+
+### 📖 推荐资源
+
+| 资源 | 链接 |
+|:-----|:-----|
+| 📘 CNCF CKA 考试大纲 | https://github.com/cncf/curriculum |
+| 📘 CNCF CKAD 考试大纲 | https://github.com/cncf/curriculum |
+| 📘 killer.sh 模拟考试 | https://killer.sh/ |
+| 📗 CKA 备考笔记 (GitHub) | https://github.com/walidshaari/Kubernetes-Certified-Administrator |
+| 📗 CKAD 备考笔记 (GitHub) | https://github.com/dgkanatsios/CKAD-exercises |
+| 📗 CKA 练习题 (GitHub) | https://github.com/alijahnas/CKA-practice-exercises |
+| 🎮 Killercoda CKA 场景 | https://killercoda.com/killer-shell-cka |
+| 🎮 Killercoda CKAD 场景 | https://killercoda.com/killer-shell-ckad |
+| 📹 CKA 实战课程 (YouTube) | https://www.youtube.com/playlist?list=PL7bmigfV0EqQz3o3H3qFhY3s3e4G3oV5R |
+| 📹 CKAD 实战课程 (YouTube) | https://www.youtube.com/playlist?list=PL7bmigfV0EqTq2JC2k1I4tL3T0G0X3WmF |
 
 ### 📈 Month Progress
 
