@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K8s Learning Tracker</title>
+<style>
+  :root {
+    --bg: #0b1120;
+    --card: #111827;
+    --border: #1e293b;
+    --primary: #38bdf8;
+    --primary-dim: rgba(56,189,248,0.1);
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --completed: #1a3a2a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    min-height: 100vh;
+  }
+  .header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: clamp(1.8rem,4vw,2.8rem);
+    font-weight: 800;
+    background: linear-gradient(135deg,#38bdf8,#818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header p { color: var(--muted); margin-top: 8px; font-size: 1rem; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+  /* Progress Overview */
+  .progress-overview {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .progress-bar-outer {
+    height: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .progress-bar-inner {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#38bdf8,#818cf8);
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-stats {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .progress-stats span { font-weight: 700; color: var(--primary); }
+
+  /* Month Tabs */
+  .month-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    scrollbar-width: thin;
+  }
+  .month-tab {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+  .month-tab:hover { border-color: var(--primary); color: var(--text); }
+  .month-tab.active {
+    border-color: var(--primary);
+    background: var(--primary-dim);
+    color: var(--primary);
+  }
+  .month-tab .tab-progress {
+    display: inline-block;
+    width: 40px;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .month-tab .tab-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  /* Month Card */
+  .month-card {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+  }
+  .month-card.active { display: block; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .month-header h2 { font-size: 1.4rem; }
+  .difficulty {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .difficulty.beginner { background: rgba(34,197,94,0.15); color: var(--green); }
+  .difficulty.intermediate { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .difficulty.advanced { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .month-progress {
+    margin-bottom: 20px;
+    padding: 12px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+  }
+  .month-progress-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .month-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg,#38bdf8,#818cf8);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .month-progress-text { font-size: 0.85rem; color: var(--muted); }
+
+  /* Week sections */
+  .week {
+    margin-bottom: 16px;
+  }
+  .week h3 {
+    font-size: 1rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .task-list { list-style: none; }
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .task-item:hover { background: rgba(255,255,255,0.03); }
+  .task-item.done .task-text { text-decoration: line-through; color: var(--muted); }
+  .task-checkbox {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    border: 2px solid var(--muted);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 11px;
+  }
+  .task-item.done .task-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .task-item.done .task-checkbox::after { content: '✓'; color: #fff; }
+  .task-text { flex: 1; font-size: 0.9rem; line-height: 1.5; }
+  .task-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  /* Lab box */
+  .lab-box {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(129,140,248,0.08);
+    border: 1px solid rgba(129,140,248,0.2);
+    border-radius: 8px;
+  }
+  .lab-box h4 { color: #818cf8; margin-bottom: 6px; font-size: 0.9rem; }
+  .lab-box p { font-size: 0.85rem; color: var(--text); line-height: 1.6; }
+
+  /* Reset button */
+  .reset-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 24px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  .footer a { color: var(--primary); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .container { padding: 12px; }
+    .month-card { padding: 16px; }
+    .month-tab { font-size: 0.78rem; padding: 8px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>☸ Kubernetes 学习追踪器</h1>
+  <p>6 个月从入门到精通 · 每日 2 小时 · 点击复选框记录进度</p>
+</div>
+
+<div class="container">
+  <div class="progress-overview">
+    <div style="display:flex;justify-content:space-between;">
+      <strong>总进度</strong>
+      <span id="overall-count">0 / 0</span>
+    </div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="overall-bar"></div>
+    </div>
+    <div class="progress-stats">
+      <span>总体完成度</span>
+      <span id="overall-pct">0%</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="month-tabs" id="monthTabs"></div>
+
+  <!-- Cards -->
+  <div id="cardsContainer"></div>
+
+  <button class="reset-btn" onclick="resetAll()">🗑 重置所有进度</button>
+</div>
+
+<div class="footer">
+  <a href="https://github.com/yt-huang/k8s-learning-tracker" target="_blank">📦 GitHub</a>
+  · Made with ❤️
+</div>
+
+<script>
+// ======================================================================
+// DATA: 6-Month K8s Learning Plan
+// ======================================================================
+const MONTHS = [
+  {
+    id: 1, title: 'K8s Fundamentals', diff: 'beginner', diffLabel: '🟢 入门',
+    lab: '部署一个多服务应用（前端 + 后端 + 数据库），使用 ConfigMap 和 Secret 管理配置。',
+    weeks: [
+      { name: '第 1 周：K8s 架构与 Pods', tasks: [
+        '了解 K8s 发展历史和核心架构（Control Plane / Worker Nodes）',
+        '安装 minikube 或 kind 搭建本地集群',
+        '学习 kubectl 常用命令（get, describe, logs, exec）',
+        '理解 Pod 的概念和生命周期',
+        '编写 YAML 创建和管理 Pods',
+        '学习 Pod 多容器模式和 initContainers',
+      ]},
+      { name: '第 2 周：Deployments & ReplicaSets', tasks: [
+        '理解 ReplicaSet 及其工作原理',
+        '学习 Deployment 声明式更新策略（RollingUpdate, Recreate）',
+        '掌握 kubectl rollout 系列命令',
+        '实践：滚动更新和回滚',
+        '学习 Pod 探针（livenessProbe, readinessProbe, startupProbe）',
+        '理解资源请求和限制（requests / limits）',
+      ]},
+      { name: '第 3 周：Services & Namespaces', tasks: [
+        '理解 Service 类型：ClusterIP, NodePort, LoadBalancer, ExternalName',
+        '学习 DNS 服务发现（CoreDNS）',
+        '实践：为应用配置 Service',
+        '理解 Namespace 的作用和多租户隔离',
+        '学习 kubectl context 和 namespace 切换',
+        '使用 kubeconfig 管理多个集群',
+      ]},
+      { name: '第 4 周：ConfigMap, Secret & 实践项目', tasks: [
+        '学习 ConfigMap 的创建和挂载方式（env, volume, command）',
+        '学习 Secret 的创建、编码和安全使用',
+        '理解 ConfigMap/Secret 的热更新行为',
+        '项目实战：部署一个 WordPress + MySQL 应用',
+        '使用 ConfigMap 配置 WordPress',
+        '使用 Secret 存储数据库密码',
+      ]},
+    ]
+  },
+  {
+    id: 2, title: 'Storage, Networking & Security', diff: 'intermediate', diffLabel: '🟡 中级',
+    lab: '部署一个安全的多层应用，配置网络策略和基于 RBAC 的权限控制。',
+    weeks: [
+      { name: '第 1 周：存储基础', tasks: [
+        '理解 Volume 类型和 hostPath/emptyDir',
+        '学习 PV（PersistentVolume）和 PVC（PersistentVolumeClaim）',
+        '掌握 StorageClass 和动态供给',
+        '实践：创建 PV/PVC 挂载到 Pod',
+        '了解 CSI（Container Storage Interface）',
+        '学习 StatefulSet 和有状态应用部署',
+      ]},
+      { name: '第 2 周：K8s 网络深入', tasks: [
+        '理解 CNI 插件工作原理（Calico, Flannel, Cilium）',
+        '学习 Service 的 iptables/IPVS 实现',
+        '理解 Ingress 和 Ingress Controller (nginx-ingress)',
+        '实践：配置 Ingress 路由规则',
+        '学习 Gateway API（新一代 Ingress 替代方案）',
+        '掌握 NetworkPolicy 实现 Pod 级防火墙',
+      ]},
+      { name: '第 3 周：认证与授权', tasks: [
+        '理解 K8s 认证方式（x509, ServiceAccount, OIDC）',
+        '学习 ServiceAccount 的创建和默认挂载',
+        '掌握 RBAC 核心资源：Role, ClusterRole, RoleBinding, ClusterRoleBinding',
+        '实践：为不同用户创建精细权限控制',
+        '学习 Node 鉴权和准入控制（Admission Controllers）',
+        '了解 Pod 安全标准（PSA / Pod Security Admission）',
+      ]},
+      { name: '第 4 周：安全加固实践', tasks: [
+        '学习 Pod Security Standards（Privileged, Baseline, Restricted）',
+        '实践：配置 Pod Security Admission',
+        '学习 OPA / Gatekeeper 策略引擎',
+        '了解 K8s 集群安全最佳实践（CIS Benchmark）',
+        '学习 Secret 加密（Encryption at Rest）',
+        '综合实验：加固一个生产级 Namespace',
+      ]},
+    ]
+  },
+  {
+    id: 3, title: 'Observability & Helm', diff: 'intermediate', diffLabel: '🟡 中级',
+    lab: '为微服务应用部署完整的可观测性栈，并用 Helm 管理所有组件。',
+    weeks: [
+      { name: '第 1 周：监控基础', tasks: [
+        '部署 Metrics Server 实现资源指标采集',
+        '理解 K8s 核心指标 Pipeline',
+        '学习 Prometheus 架构（Push vs Pull）',
+        '部署 Prometheus Operator（kube-prometheus-stack）',
+        '配置 ServiceMonitor 和 PodMonitor',
+        '实践：自定义 Prometheus 告警规则',
+      ]},
+      { name: '第 2 周：Grafana 可视化', tasks: [
+        '部署 Grafana 并配置 Prometheus 数据源',
+        '导入主流 K8s 监控 Dashboard',
+        '学习 Grafana 变量和面板设计',
+        '配置 Grafana 告警和通知渠道',
+        '创建自定义监控面板',
+        '实践：从零搭建集群监控大屏',
+      ]},
+      { name: '第 3 周：日志收集', tasks: [
+        '理解 K8s 日志架构和标准输出日志',
+        '搭建 EFK（Elasticsearch + Fluentd + Kibana）栈',
+        '搭建 Loki + Promtail + Grafana 轻量日志方案',
+        '学习日志标签和查询（LogQL）',
+        '实践：集中收集所有 Pod 日志',
+        '配置日志告警和异常检测',
+      ]},
+      { name: '第 4 周：Helm 包管理', tasks: [
+        '安装 Helm 并理解其架构',
+        '学习 Helm Chart 结构和模板语法',
+        '使用 helm search/install/upgrade/rollback',
+        '编写自己的 Helm Chart',
+        '理解 Values 文件和依赖管理',
+        '搭建 Helm 私有仓库（ChartMuseum 或 OCI）',
+      ]},
+    ]
+  },
+  {
+    id: 4, title: 'Operators, Service Mesh & GitOps', diff: 'advanced', diffLabel: '🔴 高级',
+    lab: '基于 Operator 模式部署 Prometheus，通过 Istio 实现灰度发布，使用 ArgoCD 实现 GitOps。',
+    weeks: [
+      { name: '第 1 周：CRD 与 Operator', tasks: [
+        '理解 Kubernetes 的扩展机制',
+        '学习 CRD（Custom Resource Definition）的编写',
+        '理解 Operator 模式和控制器循环',
+        '使用 kubebuilder 或 Operator SDK 创建 Operator',
+        '学习 Finalizers 和 Webhooks',
+        '实践：部署和管理 Prometheus Operator',
+      ]},
+      { name: '第 2 周：Service Mesh — Istio', tasks: [
+        '理解 Service Mesh 架构和 Sidecar 模式',
+        '安装 Istio 到 K8s 集群',
+        '配置 Sidecar 自动注入',
+        '学习 Istio 流量管理（VirtualService, DestinationRule）',
+        '实践：实现灰度发布和 A/B 测试',
+        '配置 mTLS 和授权策略',
+      ]},
+      { name: '第 3 周：GitOps — ArgoCD', tasks: [
+        '理解 GitOps 理念和声明式部署',
+        '部署 ArgoCD 到集群',
+        '创建 Application 和 ApplicationSet',
+        '实践：GitOps 管理应用部署',
+        '学习 Sync Waves、Sync Phases、Hook',
+        '配置多环境（dev/staging/prod）部署策略',
+      ]},
+      { name: '第 4 周：综合实战', tasks: [
+        '搭建完整的 GitOps 工作流',
+        '集成 Istio + ArgoCD 实现灰度发布',
+        '配置自动化回滚策略',
+        '编写自定义 Operator 管理应用状态',
+        '多集群部署 ArgoCD',
+        '项目：GitOps 驱动的微服务部署平台',
+      ]},
+    ]
+  },
+  {
+    id: 5, title: 'Multi-cluster & Advanced', diff: 'advanced', diffLabel: '🔴 高级',
+    lab: '搭建多集群联邦环境，实施跨集群服务发现和灾备切换。',
+    weeks: [
+      { name: '第 1 周：多集群管理', tasks: [
+        '理解多集群架构模式和适用场景',
+        '使用 KubeFed（Kubernetes Federation）管理多集群',
+        '学习 Cluster API 实现声明式集群创建',
+        '使用 kubectl ctx/ns 插件管理多集群上下文',
+        '实践：创建并纳管第二个 K8s 集群',
+        '配置跨集群 DNS 和服务发现',
+      ]},
+      { name: '第 2 周：Cilium & eBPF', tasks: [
+        '理解 eBPF 技术原理',
+        '安装 Cilium 作为 CNI',
+        '学习 CiliumNetworkPolicy 增强网络策略',
+        '使用 Hubble 实现网络可观测性',
+        '实践：Cilium 透明的 mTLS 加密',
+        '了解 Cilium Service Mesh 模式',
+      ]},
+      { name: '第 3 周：高级调度与资源管理', tasks: [
+        '学习高级调度策略（nodeSelector, nodeAffinity, taint/toleration）',
+        '理解调度器扩展机制（Scheduler Framework）',
+        '使用 Pod Topology Spread Constraints',
+        '学习 Descheduler 实现重调度',
+        '配置 ResourceQuota 和 LimitRange',
+        '实践：实现高可用 Pod 调度',
+      ]},
+      { name: '第 4 周：集群安全与扩展', tasks: [
+        '学习 Admission Webhook（Mutating + Validating）',
+        '使用 Kyverno 策略引擎',
+        '学习 K8s 审计日志（Audit Logging）',
+        '理解 Pod Identity / Workload Identity',
+        '实践：实现容器安全运行时防护',
+        '配置镜像签名验证（Cosign + Kyverno）',
+      ]},
+    ]
+  },
+  {
+    id: 6, title: 'CKA/CKAD & Capstone', diff: 'advanced', diffLabel: '🔴 高级',
+    lab: '完成一个生产级集群搭建项目，涵盖所有学到的知识点。',
+    weeks: [
+      { name: '第 1 周：CKA 考试准备', tasks: [
+        '了解 CKA 考试大纲和题型',
+        '熟练考试核心命令（kubectl 技巧）',
+        '练习：集群安装、升级、备份恢复（etcd）',
+        '练习：网络配置和 Ingress',
+        '练习：存储配置和 PV/PVC',
+        '模拟考试：限时 2 小时完成 CKA 样题',
+      ]},
+      { name: '第 2 周：CKAD 考试准备', tasks: [
+        '了解 CKAD 考试大纲和题型',
+        '练习：Pod 设计、Deployment、Job/CronJob',
+        '练习：ConfigMap/Secret、Service',
+        '练习：多容器 Pod 和 Sidecar 模式',
+        '练习：探针配置和资源限制',
+        '模拟考试：限时 2 小时完成 CKAD 样题',
+      ]},
+      { name: '第 3 周：Capstone — 架构设计', tasks: [
+        '设计一个生产级微服务架构',
+        '规划集群架构（HA Control Plane）',
+        '设计网络拓扑和隔离策略',
+        '规划存储和备份方案',
+        '设计监控和告警体系',
+        '编写架构文档和部署方案',
+      ]},
+      { name: '第 4 周：Capstone — 部署实施', tasks: [
+        '从零搭建生产级 K8s 集群',
+        '部署所有基础组件（监控、日志、Ingress）',
+        '通过 GitOps 部署微服务应用',
+        '配置 CI/CD 流水线',
+        '实施安全加固和策略',
+        '完成项目文档和演示',
+      ]},
+    ]
+  }
+];
+
+// ======================================================================
+// APP
+// ======================================================================
+function build() {
+  const tabs = document.getElementById('monthTabs');
+  const cards = document.getElementById('cardsContainer');
+  const totalTasks = MONTHS.reduce((s, m) => s + m.weeks.reduce((ss, w) => ss + w.tasks.length, 0), 0);
+
+  MONTHS.forEach((month, mi) => {
+    // Tab
+    const tab = document.createElement('div');
+    tab.className = 'month-tab' + (mi === 0 ? ' active' : '');
+    tab.dataset.month = mi;
+    tab.innerHTML = `M${month.id} ${month.title} <span class="tab-progress"><span class="tab-progress-fill" id="tabFill${mi}" style="width:0%"></span></span>`;
+    tab.onclick = () => switchMonth(mi);
+
+    // Count tasks in this month
+    const totalInMonth = month.weeks.reduce((s, w) => s + w.tasks.length, 0);
+
+    // Card
+    const card = document.createElement('div');
+    card.className = 'month-card' + (mi === 0 ? ' active' : '');
+    card.id = `card${mi}`;
+
+    let html = `
+      <div class="month-header">
+        <h2>第 ${month.id} 月：${month.title}</h2>
+        <span class="difficulty ${month.diff}">${month.diffLabel}</span>
+      </div>
+      <div class="month-progress">
+        <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
+          <span>本月进度</span>
+          <span id="mProgress${mi}">0 / ${totalInMonth}</span>
+        </div>
+        <div class="month-progress-bar">
+          <div class="month-progress-fill" id="mBar${mi}" style="width:0%"></div>
+        </div>
+        <div class="month-progress-text" id="mPct${mi}">0%</div>
+      </div>`;
+
+    month.weeks.forEach((week, wi) => {
+      html += `<div class="week"><h3>${week.name}</h3><ul class="task-list">`;
+      week.tasks.forEach((task, ti) => {
+        const key = `${mi}-${wi}-${ti}`;
+        html += `<li class="task-item" data-key="${key}" onclick="toggleTask('${key}')">
+          <span class="task-checkbox"></span>
+          <span class="task-text">${task}</span>
+        </li>`;
+      });
+      html += `</ul></div>`;
+    });
+
+    html += `<div class="lab-box"><h4>🧪 本月项目实战</h4><p>${month.lab}</p></div>`;
+    card.innerHTML = html;
+    cards.appendChild(card);
+    tabs.appendChild(tab);
+  });
+
+  // Setup
+  window._totalTasks = totalTasks;
+  loadState();
+  updateAll();
+}
+
+// ======================================================================
+// State Management
+// ======================================================================
+function getKey() { return 'k8s-tracker-v1'; }
+function getDone() {
+  try { return JSON.parse(localStorage.getItem(getKey()) || '{}'); } catch { return {}; }
+}
+function saveDone(d) { localStorage.setItem(getKey(), JSON.stringify(d)); }
+
+function toggleTask(key) {
+  const d = getDone();
+  d[key] = !d[key];
+  if (!d[key]) delete d[key];
+  saveDone(d);
+  const el = document.querySelector(`[data-key="${key}"]`);
+  if (el) el.classList.toggle('done', d[key]);
+  updateAll();
+}
+
+function loadState() {
+  const d = getDone();
+  document.querySelectorAll('.task-item').forEach(el => {
+    const k = el.dataset.key;
+    if (d[k]) el.classList.add('done');
+  });
+}
+
+function resetAll() {
+  if (!confirm('确定要重置所有进度吗？')) return;
+  localStorage.removeItem(getKey());
+  document.querySelectorAll('.task-item').forEach(el => el.classList.remove('done'));
+  updateAll();
+}
+
+// ======================================================================
+// Update UI
+// ======================================================================
+function updateAll() {
+  const d = getDone();
+  let overallDone = 0;
+  const total = window._totalTasks || 1;
+
+  MONTHS.forEach((month, mi) => {
+    let monthDone = 0;
+    let monthTotal = 0;
+    month.weeks.forEach((week, wi) => {
+      week.tasks.forEach((_, ti) => {
+        monthTotal++;
+        if (d[`${mi}-${wi}-${ti}`]) monthDone++;
+      });
+    });
+    overallDone += monthDone;
+
+    // Month progress
+    const pct = monthTotal > 0 ? (monthDone / monthTotal * 100) : 0;
+    const mBar = document.getElementById(`mBar${mi}`);
+    const mPct = document.getElementById(`mPct${mi}`);
+    const mProgress = document.getElementById(`mProgress${mi}`);
+    const tabFill = document.getElementById(`tabFill${mi}`);
+    if (mBar) mBar.style.width = `${pct}%`;
+    if (mPct) mPct.textContent = `${Math.round(pct)}%`;
+    if (mProgress) mProgress.textContent = `${monthDone} / ${monthTotal}`;
+    if (tabFill) tabFill.style.width = `${pct}%`;
+  });
+
+  // Overall
+  const overallPct = total > 0 ? (overallDone / total * 100) : 0;
+  const bar = document.getElementById('overall-bar');
+  const count = document.getElementById('overall-count');
+  const pctEl = document.getElementById('overall-pct');
+  if (bar) bar.style.width = `${overallPct}%`;
+  if (count) count.textContent = `${overallDone} / ${total}`;
+  if (pctEl) pctEl.textContent = `${Math.round(overallPct)}%`;
+}
+
+// ======================================================================
+// Tabs
+// ======================================================================
+function switchMonth(idx) {
+  document.querySelectorAll('.month-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.month-card').forEach((c, i) => c.classList.toggle('active', i === idx));
+}
+
+// ======================================================================
+// Init
+// ======================================================================
+document.addEventListener('DOMContentLoaded', build);
+</script>
+</body>
+</html>
