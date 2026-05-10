@@ -5,7 +5,8 @@ APP_DIR="${APP_DIR:-/opt/k8s-learning-tracker}"
 APP_PORT="${APP_PORT:-8000}"
 IMAGE="${IMAGE:-ghcr.io/yt-huang/k8s-learning-tracker:latest}"
 
-mkdir -p "$APP_DIR"
+sudo mkdir -p "$APP_DIR"
+sudo chown "$USER:$USER" "$APP_DIR"
 cd "$APP_DIR"
 
 cat > docker-compose.yml <<COMPOSE

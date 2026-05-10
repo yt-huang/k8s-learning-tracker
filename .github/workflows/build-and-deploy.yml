@@ -77,7 +77,8 @@ jobs:
           ssh -i ~/.ssh/server_key "${SERVER_USER}@${SERVER_HOST}" \
             "APP_DIR='${APP_DIR}' APP_PORT='${APP_PORT}' IMAGE='${IMAGE}' bash -s" <<'REMOTE'
           set -euo pipefail
-          mkdir -p "$APP_DIR"
+          sudo mkdir -p "$APP_DIR"
+          sudo chown "$USER:$USER" "$APP_DIR"
           cd "$APP_DIR"
           cat > docker-compose.yml <<COMPOSE
           services:
