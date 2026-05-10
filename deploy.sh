@@ -19,7 +19,7 @@ services:
       - "${APP_PORT}:80"
 COMPOSE
 
-docker compose pull
-docker compose up -d
-docker image prune -f
-docker compose ps
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker image prune -f
+sudo docker compose ps
