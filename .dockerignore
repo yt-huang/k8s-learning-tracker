@@ -1,6 +1,6 @@
+Dockerfile
+.dockerignore
 .git
 .github
 .DS_Store
-README.md
-PLAYBOOK.md
 *.log
