@@ -1,0 +1,7 @@
+services:
+  app:
+    image: ${IMAGE:-ghcr.io/yt-huang/k8s-learning-tracker:latest}
+    container_name: k8s-learning-tracker
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:80"

@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    image: k8s-learning-tracker:local
+    container_name: k8s-learning-tracker
+    restart: unless-stopped
+    ports:
+      - "8000:80"
